@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import Home from './pages/Home';
 import Earthquake from './pages/Earthquake'; // Make sure to create this component
 import Weather from './pages/Weather'; // Make sure to create this component
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
@@ -15,13 +16,13 @@ export default function App() {
             <h2 className="flex items-center text-2xl text-white">SIGECA</h2>
           </div>
           <div className="flex">
-            <button className="flex items-center text-2xl text-white">
+            <NavLink to="/profile" className="flex items-center text-2xl text-white">
               <img
                 className="ml-8 border-2 border-white rounded-full size-10"
                 src="https://avatarfiles.alphacoders.com/374/thumb-1920-374805.png"
                 alt="User Avatar"
               />
-            </button>
+            </NavLink>
           </div>
         </header>
         <div className="background bg-slate-950 min-h-[90svh]">
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/earthquake" element={<Earthquake />} />
             <Route path="/weather" element={<Weather />} />
+            <Route path="/profile" element={<Profile/>}/>
           </Routes>
         </div>
         <footer className="sticky float-end bottom-0 w-full p-2 text-center items-center text-white h-[10vh] bg-gray-950">

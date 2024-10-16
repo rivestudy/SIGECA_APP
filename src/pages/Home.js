@@ -1,23 +1,27 @@
+// pages/Home.js
 import React, { useEffect, useState } from 'react';
 import { FaMapLocationDot } from "react-icons/fa6";
 import { WiDaySunny, WiNightClear, WiDayCloudy, WiNightAltCloudy, WiCloudy, WiSmog, WiThunderstorm, WiSmoke, WiNightFog, WiDayFog, WiNightAltSprinkle, WiDayShowers, WiNightAltShowers, WiNightAltRain, WiDayRain, WiShowers } from 'react-icons/wi';
-
+import { fetchLatestEarthquake, fetchWeatherData } from '../data/fetchapi'; // Adjust the import path as needed
 const Home = () => {
     const [earthquake, setEarthquake] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showMap, setShowMap] = useState(false);
-    const [weather, setWeather] = useState([]); // State for weather data
+    const [weather, setWeather] = useState([]);
+    const [location, setLoc] = useState({});
 
     useEffect(() => {
-        const fetchEarthquakeData = async () => {
+        const fetchData = async () => {
+            setLoading(true);
             try {
-                const response = await fetch('https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setEarthquake(data.Infogempa.gempa);
+                const [earthquakeData, weatherData] = await Promise.all([
+                    fetchLatestEarthquake(),
+                    fetchWeatherData(8,`33.74.10.1006`)
+                ]);
+                setEarthquake(earthquakeData);
+                setWeather(weatherData.forecasts);
+                setLoc(weatherData.location)
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -25,23 +29,7 @@ const Home = () => {
             }
         };
 
-        const fetchWeatherData = async () => {
-            try {
-                const response = await fetch('https://api.bmkg.go.id/publik/prakiraan-cuaca?adm4=33.74.10.1006');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                const forecasts = data.data[0].cuaca;
-                const flattenedForecasts = forecasts.flat().slice(0, 8);
-                setWeather(flattenedForecasts);
-            } catch (err) {
-                setError(err.message);
-            }
-        };
-
-        fetchEarthquakeData();
-        fetchWeatherData(); // Fetch weather data
+        fetchData();
     }, []);
 
     const shakemapBaseUrl = 'https://data.bmkg.go.id/DataMKG/TEWS/';
@@ -99,7 +87,7 @@ const Home = () => {
             </div>
             <div className='p-4 rounded-2xl bg-slate-900'>
                 <h2 className="mb-4 text-xl font-bold">Weather Forecast</h2>
-                <h2 className='mb-2 text-l'> Tembalang, Kota Semarang</h2>
+                <h2 className='mb-2 text-l'> {location.kecamatan}, {location.kotkab}</h2>
                 {weather.length > 0 ? (
                     <ul className="grid grid-cols-4 gap-4">
                         {weather.map((forecast, index) => {
@@ -110,18 +98,17 @@ const Home = () => {
                             // Determine if it's daytime or nighttime based on the time index
                             const nightTimes = ['19:00', '22:00', '01:00', '04:00'];
                             const isNight = nightTimes.some(time => timeIndex.includes(time));
-                            // Example condition for night
 
                             // Choose icon based on weather and time
                             switch (weatherid) {
                                 case 0: // Clear Skies
-                                    icon = isNight ? <WiNightClear className="text-5xl text-white" /> : <WiDaySunny className="text-5xl text-whitetext-white" />;
+                                    icon = isNight ? <WiNightClear className="text-5xl text-white" /> : <WiDaySunny className="text-5xl text-white" />;
                                     break;
                                 case 1: // Partly Cloudy
-                                    icon = isNight ? <WiNightClear className="text-5xl text-whitetext-white" /> : <WiDaySunny className="text-5xl text-whitetext-white" />;
+                                    icon = isNight ? <WiNightClear className="text-5xl text-white" /> : <WiDaySunny className="text-5xl text-white" />;
                                     break;
                                 case 2: // Partly Cloudy
-                                    icon = isNight ? <WiNightAltCloudy className="text-5xl text-whitetext-white" /> : <WiDayCloudy className="text-5xl text-whitetext-white" />;
+                                    icon = isNight ? <WiNightAltCloudy className="text-5xl text-white" /> : <WiDayCloudy className="text-5xl text-white" />;
                                     break;
                                 case 3: // Mostly Cloudy
                                     icon = <WiCloudy className="text-5xl text-white" />;
@@ -130,7 +117,7 @@ const Home = () => {
                                     icon = <WiCloudy className="text-5xl text-white" />;
                                     break;
                                 case 5: // Haze
-                                    icon = <WiSmog className="text-5xl ttext-white" />;
+                                    icon = <WiSmog className="text-5xl text-white" />;
                                     break;
                                 case 10: // Smoke
                                     icon = <WiSmoke className="text-5xl text-white" />;
@@ -168,7 +155,6 @@ const Home = () => {
                                     <div className='my-2'>
                                         {icon}
                                     </div>
-
                                     <span>
                                         {forecast.t}°C
                                     </span>
