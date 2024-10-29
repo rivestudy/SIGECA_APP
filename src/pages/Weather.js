@@ -263,6 +263,7 @@ const Weather = () => {
               )}
             </div>
             <h1 className='mt-4 text-center text-slate-400'>Data diambil dari api.bmkg.go.id</h1>
+            
           </div>
         )}
       </div>
