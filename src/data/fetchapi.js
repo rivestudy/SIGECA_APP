@@ -22,7 +22,7 @@ export const fetchRecentEarthquakes = async () => {
         }
         const data = await response.json();
         const eq = data.Infogempa.gempa; // Access gempa array
-        return eq.slice(0, 15); // Get the latest 15 earthquakes
+        return eq.slice(0, 10); // Get the latest 15 earthquakes
     } catch (err) {
         throw new Error(err.message);
     }
@@ -35,7 +35,7 @@ export const fetchFeeledEarthquakes = async () => {
         }
         const data = await response.json();
         const eqf = data.Infogempa.gempa; // Access gempa array
-        return eqf.slice(0, 15); // Get the latest 15 earthquakes
+        return eqf.slice(0, 10); // Get the latest 15 earthquakes
     } catch (err) {
         throw new Error(err.message);
     }

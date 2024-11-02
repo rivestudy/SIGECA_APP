@@ -1,13 +1,11 @@
-// pages/Home.js
 import React, { useEffect, useState } from 'react';
-import { FaMapLocationDot } from "react-icons/fa6";
 import { WiDaySunny, WiNightClear, WiDayCloudy, WiNightAltCloudy, WiCloudy, WiSmog, WiThunderstorm, WiSmoke, WiNightFog, WiDayFog, WiNightAltSprinkle, WiDayShowers, WiNightAltShowers, WiNightAltRain, WiDayRain, WiShowers } from 'react-icons/wi';
 import { fetchLatestEarthquake, fetchWeatherData } from '../data/fetchapi'; // Adjust the import path as needed
+
 const Home = () => {
     const [earthquake, setEarthquake] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [showMap, setShowMap] = useState(false);
     const [weather, setWeather] = useState([]);
     const [location, setLoc] = useState({});
 
@@ -17,11 +15,11 @@ const Home = () => {
             try {
                 const [earthquakeData, weatherData] = await Promise.all([
                     fetchLatestEarthquake(),
-                    fetchWeatherData(8,`33.74.10.1006`)
+                    fetchWeatherData(9, `33.74.10.1006`)
                 ]);
                 setEarthquake(earthquakeData);
                 setWeather(weatherData.forecasts);
-                setLoc(weatherData.location)
+                setLoc(weatherData.location);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -32,25 +30,25 @@ const Home = () => {
         fetchData();
     }, []);
 
-    const shakemapBaseUrl = 'https://data.bmkg.go.id/DataMKG/TEWS/';
-
-    const handleToggleMap = () => {
-        setShowMap(prev => !prev);
+    const getColorClass = (magnitude) => {
+        if (magnitude < 3) return 'bg-green-500';
+        if (magnitude < 5) return 'bg-yellow-500';
+        if (magnitude < 7) return 'bg-orange-500';
+        return 'bg-red-500';
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div className='h-screen'><img className='relative w-20 mx-auto top-1/3' src='https://media.tenor.com/On7kvXhzml4AAAAj/loading-gif.gif' alt=''/></div>;
     if (error) return <div>Error: {error}</div>;
     if (!earthquake) return <div>No earthquake data available.</div>;
 
     return (
-        <div className="p-4 text-white">
-            <h1 className='m-3 text-3xl'>Home</h1>
-            <div className='p-4 mb-4 rounded-2xl bg-slate-900'>
-                <h2 className="mb-4 text-xl font-bold">Recent Earthquake</h2>
-
+        <div className="p-6">
+            <h1 className='m-3 text-3xl font-bold'>Home</h1>
+            <div className={`p-4 mb-4 text-black shadow-lg rounded-2xl ${getColorClass(earthquake.Magnitude)}`}>
+                <h2 className="mb-2 text-xl font-bold">Gempa Terkini</h2>
                 <div className='grid grid-cols-4'>
-                    <ul>Magnitudo</ul>
-                    <ul className='col-span-3'>: {earthquake.Magnitude} SR</ul>
+                    <ul className='font-bold'>Magnitudo</ul>
+                    <ul className='col-span-3 font-bold'>: {earthquake.Magnitude} SR</ul>
                     <ul>Episenter</ul>
                     <ul className='col-span-3'>: {earthquake.Wilayah}</ul>
                     <ul>Waktu</ul>
@@ -58,106 +56,71 @@ const Home = () => {
                     <ul>Kedalaman</ul>
                     <ul className='col-span-3'>: {earthquake.Kedalaman}</ul>
                     <ul>Koordinat</ul>
-                    <ul className='flex items-center col-span-3'>
-                        <span className='mr-2'>: {earthquake.Coordinates}</span>
-                        <button
-                            className='flex items-center gap-2 text-cyan-500'
-                            onClick={handleToggleMap}
-                        >
-                            <FaMapLocationDot /> Cek Lokasi
-                        </button>
-                    </ul>
+                    <ul className='col-span-3'>: {earthquake.Coordinates}</ul>
                 </div>
-
-                {showMap && earthquake.Shakemap && (
-                    <div className={`absolute z-50 p-4 transition-opacity duration-700 ease-in-out transform rounded-lg shadow-lg top-20 left-[5%] right-[5%] bg-slate-800 ${showMap ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                        <img
-                            src={`${shakemapBaseUrl}${earthquake.Shakemap}`}
-                            alt="Shake map"
-                            className="w-[1000px] mt-4"
-                        />
-                        <button
-                            className="mt-2 text-red-500"
-                            onClick={handleToggleMap}
-                        >
-                            Close
-                        </button>
-                    </div>
-                )}
             </div>
-            <div className='p-4 rounded-2xl bg-slate-900'>
-                <h2 className="mb-4 text-xl font-bold">Weather Forecast</h2>
+
+            <div className='p-4 shadow-md bg-gray-50 rounded-2xl'>
+                <h2 className="mb-2 text-xl font-bold">Prakiraan Cuaca</h2>
                 <h2 className='mb-2 text-l'> {location.kecamatan}, {location.kotkab}</h2>
                 {weather.length > 0 ? (
-                    <ul className="grid grid-cols-4 gap-4">
+                    <ul className="grid grid-cols-3 gap-2">
                         {weather.map((forecast, index) => {
                             const weatherid = Number(forecast.weather);
                             const timeIndex = forecast.local_datetime; // Check the time index
                             let icon;
 
-                            // Determine if it's daytime or nighttime based on the time index
                             const nightTimes = ['19:00', '22:00', '01:00', '04:00'];
                             const isNight = nightTimes.some(time => timeIndex.includes(time));
 
-                            // Choose icon based on weather and time
                             switch (weatherid) {
                                 case 0: // Clear Skies
-                                    icon = isNight ? <WiNightClear className="text-5xl text-white" /> : <WiDaySunny className="text-5xl text-white" />;
-                                    break;
                                 case 1: // Partly Cloudy
-                                    icon = isNight ? <WiNightClear className="text-5xl text-white" /> : <WiDaySunny className="text-5xl text-white" />;
+                                    icon = isNight ? <WiNightClear className="text-5xl text-black" /> : <WiDaySunny className="text-5xl text-black" />;
                                     break;
                                 case 2: // Partly Cloudy
-                                    icon = isNight ? <WiNightAltCloudy className="text-5xl text-white" /> : <WiDayCloudy className="text-5xl text-white" />;
+                                    icon = isNight ? <WiNightAltCloudy className="text-5xl text-black" /> : <WiDayCloudy className="text-5xl text-black" />;
                                     break;
                                 case 3: // Mostly Cloudy
-                                    icon = <WiCloudy className="text-5xl text-white" />;
-                                    break;
                                 case 4: // Overcast
-                                    icon = <WiCloudy className="text-5xl text-white" />;
+                                    icon = <WiCloudy className="text-5xl text-black" />;
                                     break;
                                 case 5: // Haze
-                                    icon = <WiSmog className="text-5xl text-white" />;
+                                    icon = <WiSmog className="text-5xl text-black" />;
                                     break;
                                 case 10: // Smoke
-                                    icon = <WiSmoke className="text-5xl text-white" />;
+                                    icon = <WiSmoke className="text-5xl text-black" />;
                                     break;
                                 case 45: // Fog
-                                    icon = isNight ? <WiNightFog className="text-5xl text-white" /> : <WiDayFog className="text-5xl text-white" />;
+                                    icon = isNight ? <WiNightFog className="text-5xl text-black" /> : <WiDayFog className="text-5xl text-black" />;
                                     break;
                                 case 60: // Light Rain
-                                    icon = isNight ? <WiNightAltSprinkle className="text-5xl text-white" /> : <WiDayShowers className="text-5xl text-white" />;
+                                    icon = isNight ? <WiNightAltSprinkle className="text-5xl text-black" /> : <WiDayShowers className="text-5xl text-black" />;
                                     break;
                                 case 61: // Rain
-                                    icon = isNight ? <WiNightAltShowers className="text-5xl text-white" /> : <WiDayShowers className="text-5xl text-white" />;
+                                    icon = isNight ? <WiNightAltShowers className="text-5xl text-black" /> : <WiDayShowers className="text-5xl text-black" />;
                                     break;
                                 case 63: // Heavy Rain
-                                    icon = isNight ? <WiNightAltRain className="text-5xl text-white" /> : <WiDayRain className="text-5xl text-white" />;
+                                    icon = isNight ? <WiNightAltRain className="text-5xl text-black" /> : <WiDayRain className="text-5xl text-black" />;
                                     break;
                                 case 80: // Isolated Shower
-                                    icon = <WiShowers className="text-5xl text-white" />;
+                                    icon = <WiShowers className="text-5xl text-black" />;
                                     break;
                                 case 95: // Severe Thunderstorm
-                                    icon = <WiThunderstorm className="text-5xl text-white" />;
-                                    break;
                                 case 97: // Severe Thunderstorm
-                                    icon = <WiThunderstorm className="text-5xl text-white" />;
+                                    icon = <WiThunderstorm className="text-5xl text-black" />;
                                     break;
                                 default:
                                     icon = null;
                             }
 
                             return (
-                                <div key={index} className="flex flex-col items-center py-4 text-center border-b border-gray-600">
+                                <div key={index} className="flex flex-col items-center py-2 text-center">
                                     <span className="font-semibold">
                                         {new Date(forecast.local_datetime).toLocaleString()}:
                                     </span>
-                                    <div className='my-2'>
-                                        {icon}
-                                    </div>
-                                    <span>
-                                        {forecast.t}°C
-                                    </span>
+                                    <div className='my-2'>{icon}</div>
+                                    <span>{forecast.t}°C</span>
                                 </div>
                             );
                         })}
