@@ -1,6 +1,6 @@
-// pages/Earthquake.js
 import React, { useEffect, useState } from 'react';
 import { fetchLatestEarthquake, fetchRecentEarthquakes, fetchFeeledEarthquakes, getShakemapLink } from '../data/fetchapi'; // Adjust the import path as needed
+import EqTab  from '../components/earthquaketab';
 
 const Earthquake = () => {
     const [latestEarthquake, setLatestEarthquake] = useState(null);
@@ -62,47 +62,11 @@ const Earthquake = () => {
             </div>
             <div className='p-2 mb-4 bg-gray-100 rounded-2xl'>
                 <h2 className="m-3 text-xl font-bold">Gempa Dirasakan</h2>
-                <ul className='grid grid-cols-1 gap-2 mx-2'>
-                    {feeledEarthquakes.map((eq, index) => (
-                        <div className={`grid rounded-md  grid-cols-12 p-3 ${index % 2 === 0 ? 'bg-gray-300 shadow-sm shadow-slate-600' : 'bg-gray-100'}`}>
-                            <h1 className='my-auto text-center align-middle'>{index + 1}</h1>
-                            <div key={index} className={`ml-2 col-span-11 grid grid-cols-4`}>
-                                <ul>Magnitudo</ul>
-                                <ul className='col-span-3'>: {eq.Magnitude} SR</ul>
-                                <ul>Episenter</ul>
-                                <ul className='col-span-3'>: {eq.Wilayah}</ul>
-                                <ul>Waktu</ul>
-                                <ul className='col-span-3'>: {`${eq.Tanggal} - ${eq.Jam}`}</ul>
-                                <ul>Kedalaman</ul>
-                                <ul className='col-span-3'>: {eq.Kedalaman}</ul>
-                                <ul>Koordinat</ul>
-                                <ul className='col-span-3'>{eq.Coordinates}</ul>
-                            </div>
-                        </div>
-                    ))}
-                </ul>
+                <EqTab eqs={feeledEarthquakes}/>
             </div>
             <div className='p-2 mb-4 bg-gray-100 rounded-2xl'>
                 <h2 className="m-3 text-xl font-bold">Gempa M 5+</h2>
-                <ul className='grid grid-cols-1 gap-2'>
-                    {recentEarthquakes.map((eq, index) => (
-                        <div className={`grid rounded-md  grid-cols-12 p-3 ${index % 2 === 0 ? 'bg-gray-300 shadow-sm shadow-slate-600' : 'bg-gray-100'}`}>
-                            <h1 className='my-auto text-center align-middle'>{index + 1}</h1>
-                            <div key={index} className={`ml-2 col-span-11 grid grid-cols-4`}>
-                                <ul>Magnitudo</ul>
-                                <ul className='col-span-3'>: {eq.Magnitude} SR</ul>
-                                <ul>Episenter</ul>
-                                <ul className='col-span-3'>: {eq.Wilayah}</ul>
-                                <ul>Waktu</ul>
-                                <ul className='col-span-3'>: {`${eq.Tanggal} - ${eq.Jam}`}</ul>
-                                <ul>Kedalaman</ul>
-                                <ul className='col-span-3'>: {eq.Kedalaman}</ul>
-                                <ul>Koordinat</ul>
-                                <ul className='col-span-3'>{eq.Coordinates}</ul>
-                            </div>
-                        </div>
-                    ))}
-                </ul>
+                <EqTab eqs={recentEarthquakes}/>
             </div>
             <h1 className='mt-4 text-center text-slate-400'>Data diambil dari api.bmkg.go.id</h1>
         </div>
