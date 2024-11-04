@@ -46,16 +46,16 @@ const Earthquake = () => {
                 <h2 className="m-3 mb-4 text-xl font-bold">Gempa Terkini</h2>
                 {latestEarthquake && (
                     <div className='grid grid-cols-4 m-3'>
-                        <ul>Magnitudo</ul>
+                        <ul className='font-semibold'>Magnitudo</ul>
                         <ul className='col-span-3'>: {latestEarthquake.Magnitude} SR</ul>
-                        <ul>Episenter</ul>
+                        <ul className='font-semibold'>Episenter</ul>
                         <ul className='col-span-3'>: {latestEarthquake.Wilayah}</ul>
-                        <ul>Waktu</ul>
+                        <ul className='font-semibold'>Waktu</ul>
                         <ul className='col-span-3'>: {`${latestEarthquake.Tanggal} - ${latestEarthquake.Jam}`}</ul>
-                        <ul>Kedalaman</ul>
+                        <ul className='font-semibold'>Kedalaman</ul>
                         <ul className='col-span-3'>: {latestEarthquake.Kedalaman}</ul>
-                        <ul>Koordinat</ul>
-                        <ul className='col-span-3'>{latestEarthquake.Coordinates}</ul>
+                        <ul className='font-semibold'>Koordinat</ul>
+                        <ul className='col-span-3'>: {latestEarthquake.Coordinates}</ul>
                         <img className='col-span-4 mt-2 rounded-lg shadow-md' src={getShakemapLink(latestEarthquake.Shakemap)} alt='' />
                     </div>
                 )}

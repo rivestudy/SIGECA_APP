@@ -97,7 +97,7 @@ const WeatherTab = ({ forecasts, grid, details }) => {
                                 wind = null;
                         }
                         return (
-                            <div key={index} className="flex flex-col items-center py-4 m-2 text-center rounded-lg">
+                            <div key={index} className="flex flex-col items-center px-3 py-4 m-2 text-center rounded-lg">
                                 <span className="font-semibold">
                                     {new Date(forecast.local_datetime).toLocaleString()}:
                                 </span>
