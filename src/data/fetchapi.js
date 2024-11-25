@@ -21,25 +21,49 @@ export const fetchRecentEarthquakes = async () => {
             throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        const eq = data.Infogempa.gempa; // Access gempa array
-        return eq.slice(0, 10); // Get the latest 15 earthquakes
+        const eq = data.Infogempa.gempa; 
+        return eq.slice(0, 10); 
     } catch (err) {
         throw new Error(err.message);
     }
 };
 export const fetchFeeledEarthquakes = async () => {
     try {
-        const response = await fetch('https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.json');
+        const response = await fetch('https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.xml'); // Use the correct XML URL
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        const data = await response.json();
-        const eqf = data.Infogempa.gempa; // Access gempa array
-        return eqf.slice(0, 10); // Get the latest 15 earthquakes
+        
+        const textData = await response.text(); 
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(textData, "application/xml");
+        const earthquakes = xmlDoc.getElementsByTagName('gempa');
+        const eqf = Array.from(earthquakes).slice(0, 10).map(eq => {
+
+            const magnitude = eq.getElementsByTagName('Magnitude')[0]?.textContent || 'N/A';
+            const wilayah = eq.getElementsByTagName('Wilayah')[0]?.textContent || 'N/A';
+            const tanggal = eq.getElementsByTagName('Tanggal')[0]?.textContent || 'N/A';
+            const jam = eq.getElementsByTagName('Jam')[0]?.textContent || 'N/A';
+            const kedalaman = eq.getElementsByTagName('Kedalaman')[0]?.textContent || 'N/A';
+            const coordinates = eq.getElementsByTagName('coordinates')[0]?.textContent || 'N/A';
+            
+            return {
+                Magnitude: magnitude,
+                Wilayah: wilayah,
+                Tanggal: tanggal,
+                Jam: jam,
+                Kedalaman: kedalaman,
+                Coordinates: coordinates, 
+            };
+        });
+        
+        return eqf;
     } catch (err) {
         throw new Error(err.message);
     }
 };
+
+
 
 export const getShakemapLink = (shakemap) => `${shakemaplink}${shakemap}`;
 export const fetchWeatherData = async (count, subDistrict = String) => {

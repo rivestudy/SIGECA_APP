@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchLatestEarthquake, fetchRecentEarthquakes, fetchFeeledEarthquakes, getShakemapLink } from '../data/fetchapi'; // Adjust the import path as needed
-import EqTab  from '../components/earthquaketab';
+import EqTab from '../components/earthquaketab';
 
 const Earthquake = () => {
     const [latestEarthquake, setLatestEarthquake] = useState(null);
@@ -44,8 +44,9 @@ const Earthquake = () => {
             <h1 className='m-3 text-3xl font-bold'>Informasi Gempa</h1>
             <div className='p-4 mb-4 bg-gray-100 shadow-lg rounded-2xl'>
                 <h2 className="m-3 mb-4 text-xl font-bold">Gempa Terkini</h2>
+
                 {latestEarthquake && (
-                    <div className='grid grid-cols-4 m-3'>
+                    <div className='grid grid-cols-4'>
                         <ul className='font-semibold'>Magnitudo</ul>
                         <ul className='col-span-3'>: {latestEarthquake.Magnitude} SR</ul>
                         <ul className='font-semibold'>Episenter</ul>
@@ -59,14 +60,15 @@ const Earthquake = () => {
                         <img className='col-span-4 mt-2 rounded-lg shadow-md' src={getShakemapLink(latestEarthquake.Shakemap)} alt='' />
                     </div>
                 )}
+
             </div>
             <div className='p-2 mb-4 bg-gray-100 rounded-2xl'>
                 <h2 className="m-3 text-xl font-bold">Gempa Dirasakan</h2>
-                <EqTab eqs={feeledEarthquakes}/>
+                <EqTab eqs={feeledEarthquakes} />
             </div>
             <div className='p-2 mb-4 bg-gray-100 rounded-2xl'>
                 <h2 className="m-3 text-xl font-bold">Gempa M 5+</h2>
-                <EqTab eqs={recentEarthquakes}/>
+                <EqTab eqs={recentEarthquakes} />
             </div>
             <h1 className='mt-4 text-center text-slate-400'>Data diambil dari api.bmkg.go.id</h1>
         </div>
